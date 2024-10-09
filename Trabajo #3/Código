@@ -1,1 +1,29 @@
+library(readxl)
+nose <- read_excel("nose.xlsx")
+matriz_cov <- cov(nose)
+matriz_cov
+#si tomamos todos los pesos iguales el riesgo sería
+unos <- c(1, 1, 1)
+riesgoigual <- (1/9)*(t(unos) %*% matriz_cov %*% unos)
 
+
+#usando lo visto en clase
+
+unos1 <- c(-1, -1, -1, 0)
+unos2 <- c(1, 1, 1, 0)
+matriz1 <- matrix(0, nrow = 4, ncol = 4)
+matriz1[1:3, 1:3] <- matriz_cov
+matriz1[, 4] <- unos1
+matriz1[4, ] <- unos2
+b <- c(0, 0, 0, 1)
+pesosymulti <- solve(matriz1,b)
+pesos <- head(pesosymulti, -1)
+riesgo <- t(pesos)%*%matriz_cov%*%pesos
+#los rendimientos esperados son (-0,0882685,-0,1482254,-0,134427) respectivamente
+#Frontera eficiente
+reesp <- c(-0.000882685,-0.001482254,-0.00134427)
+A <- t(reesp)%*%solve(matriz_cov)%*%unos
+B <- t(reesp)%*%solve(matriz_cov)%*%reesp
+C <- t(unos)%*%solve(matriz_cov)%*%unos
+D <- B*C-(t(unos)%*%t(solve(matriz_cov))%*%reesp%*%t(reesp)%*%solve(matriz_cov)%*%unos)
+rentmini <- t(reesp)%*%pesos
